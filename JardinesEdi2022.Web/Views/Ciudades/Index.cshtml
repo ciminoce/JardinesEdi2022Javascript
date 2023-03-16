@@ -1,0 +1,254 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/toastr.js"></script>
+<div class="card">
+    <h5 class="card-header bg-primary text-white">Listado de Ciudades</h5>
+    <div class="card-body">
+        <button id="btnNuevo" onclick="abrirModal(0)" class="btn btn-primary"><i class="fa fa-plus"></i> Nuevo</button>
+        <hr />
+        <table id="tabla" class="table display cell-border">
+            <thead>
+                <tr>
+                    <th>Ciudad</th>
+                    <th>País</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCiudad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Ciudades</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtCiudadId" value="0" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="txtNombreCiudad" class="form-label">Nombre Ciudad</label>
+                        <input type="text" class="form-control" id="txtNombreCiudad" placeholder="Ingrese nombre">
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="cboPais" class="form-label">País</label>
+
+                        <select id="cboPais" class="form-select" aria-label="Default select example">
+                        </select>
+                    </div>
+
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        var tablaCiudades;
+        $(document).ready(function() {
+            tablaCiudades = $('#tabla').DataTable({
+                "ajax": {
+                    "url": "@Url.Action("GetCiudades", "Ciudades")",
+                    type: "GET",
+                    dataType: "json"
+                },
+                "columns": [
+                    { "data": "NombreCiudad" },
+                    { "data": "Pais" },
+
+                    {
+                        "data": "CiudadId",
+                        "render": function(data) {
+                            return "<button class='btn btn-warning btn-sm btn-editar' type='button' onclick='abrirModal("+ data+")'><i class='fas fa-pen'></i></button> " +
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='Eliminar(" +
+                                data +
+                                ")'><i class='fas fa-trash'></i></button> ";
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "100px"
+                    }
+                ]
+
+            });
+        });
+
+        function CargarComboPaises() {
+            $('#cboPais').empty();
+            $.ajax({
+                "url": "@Url.Action("GetPaises","Paises")",
+                "type": "GET",
+                "dataType": "json",
+                "contentType": "application/json, charset=utf-8",
+                success:function(paises) {
+                    $('#cboPais').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
+                    $.each(paises.data,
+                        function(index, pais) {
+                            $('#cboPais').append('<option value="' + pais.PaisId + '">' + pais.NombrePais + '</option>');
+                        });
+                }
+
+
+            });
+        }
+
+        //$("#tabla tbody").on("click",
+        //    '.btn-editar',
+        //    function() {
+        //        filaSeleccionada = $(this).closest("tr");
+        //        var datosCiudad = tablaCiudades.row(filaSeleccionada).data();
+        //        abrirModal(datosCiudad);
+
+        //    });
+
+
+        function abrirModal($ciudadId) {
+            $('#mensajeError').hide();
+            CargarComboPaises();
+            if ($ciudadId == 0) {
+                $('#txtCiudadId').val(0);
+                $('#txtNombreCiudad').val('');
+                $('#cboPais').val($('#cboPais option:first').val());
+
+            } else {
+                $.ajax({
+                    "url": "@Url.Action("GetCiudad","Ciudades")" + "?ciudadId=" + $ciudadId,
+                    "type": "GET",
+                    "dataType": "json",
+                    success: function (data) {
+                        console.log(data);
+                        $("#txtCiudadId").val(data.CiudadId);
+                        $("#txtNombreCiudad").val(data.NombreCiudad);
+                        $("#cboPais").val(data.PaisId);
+
+                    }
+                });
+
+
+            };
+            $('#modalCiudad').modal('show');
+        }
+
+        function Guardar() {
+            var ciudad= {
+                CiudadId: $("#txtCiudadId").val(),
+                NombreCiudad: $("#txtNombreCiudad").val(),
+                PaisId: $("#cboPais option:selected").val(),
+            //    Pais: {
+            //        PaisId: $("#cboPais option:selected").val(),
+            //        NombrePais: $("#cboPais option:selected").text()
+            //    }
+            }
+            console.log(ciudad);
+            var request = new FormData();
+            request.append("objeto",JSON.stringify(ciudad));
+            $.ajax({
+                "url": "@Url.Action("Create","Ciudades")",
+                "type": "POST",
+                "dataType": "json",
+                data: request,
+                processData: false,
+                contentType: false,
+
+                success:function(response) {
+                    if (response.respuesta) {
+                        toastr.success(response.mensaje);
+                        $('#modalCiudad').modal('hide');
+                        tablaCiudades.ajax.reload();
+                    } else {
+                        $("#mensajeError").text(response.mensaje);
+                        $("#mensajeError").show();
+                    }
+                }
+            });
+        }
+
+        function Eliminar($CiudadId) {
+            if ($CiudadId != 0) {
+                $.ajax({
+                    "url": "@Url.Action("GetCiudad","Ciudades")" + "?ciudadId=" + $CiudadId,
+                    "type": "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        console.log(data);
+                        if (data != null) {
+                          Swal.fire({
+                                    title: '¿Desea eliminar el registro de '+data.NombreCiudad+'?',
+                                    text: 'No se le permitirá revertir la operación',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Sí, borrar!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            "url": "@Url.Action("Eliminar","Ciudades")" + "?ciudadId=" + $CiudadId,
+                                            "type": "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8",
+                                            success: function(response) {
+                                                console.log(response);
+                                                if (response.respuesta) {
+                                                    tablaCiudades.ajax.reload();
+
+                                                    Swal.fire(
+                                                        'Borrado!',
+                                                        response.mensaje,
+                                                        'success'
+                                                    );
+                                                } else {
+                                                    Swal.fire(
+                                                        'Registro no Borrado!',
+                                                        response.mensaje,
+                                                        'error'
+                                                    );
+
+                                                }
+
+
+                                            }
+                                        });
+
+                                    }
+                                });
+
+                        }
+
+                    }
+                });
+            }
+
+
+
+        }
+
+    </script>
+}

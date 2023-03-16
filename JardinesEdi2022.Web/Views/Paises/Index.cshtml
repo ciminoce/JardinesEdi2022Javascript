@@ -1,0 +1,195 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/toastr.js"></script>
+<div class="card">
+    <h5 class="card-header bg-primary text-white">Listado de Países</h5>
+    <div class="card-body">
+        <button id="btnNuevo" onclick="abrirModal(0)" class="btn btn-primary"><i class="fa fa-plus"></i> Nuevo</button>
+        <hr />
+        <table id="tablaPaises" class="table display cell-border">
+            <thead>
+                <tr>
+                    <th>Países</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modalPais" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Datos del País</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="PaisId" />
+                    <div class="mb-3">
+                        <label for="NombrePais" class="col-form-label">País:</label>
+                        <input type="text" class="form-control" id="NombrePais">
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" onclick="Guardar()" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var tablaPaises;
+        $(document).ready(function() {
+            tablaPaises = $('#tablaPaises').DataTable({
+                "ajax": {
+                    "url": "@Url.Action("GetPaises", "Paises")",
+                    type: "GET",
+                    dataType: "json"
+                },
+                "columns": [
+                    { "data": "NombrePais" },
+                    {
+                        "data": "PaisId",
+                        "render": function(data) {
+                            return "<button class='btn btn-warning btn-sm' type='button' onclick='abrirModal(" +
+                                data +
+                                ")'><i class='fas fa-pen'></i></button> " +
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='Eliminar(" +
+                                data +
+                                ")'><i class='fas fa-trash'></i></button> ";
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "100px"
+                    }
+                ]
+
+            });
+        });
+        function abrirModal($paisId) {
+            $("#PaisId").val($paisId);
+            if ($paisId != 0) {
+                $.ajax({
+                    "url": "@Url.Action("GetPais","Paises")" + "?paisId=" + $paisId,
+                    "type": "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        console.log(data);
+                        if (data != null) {
+                            $("#NombrePais").val(data.NombrePais);
+
+                        }
+
+                    }
+                });
+            } else {
+                $("#NombrePais").val("");
+
+            }
+            $("#modalPais").modal('show');
+        }
+
+        function Guardar() {
+            var $data = {
+                pais: {
+                    "PaisId": $("#PaisId").val(),
+                    "NombrePais": $("#NombrePais").val()
+
+                }
+                
+        }
+            console.log($data);
+            $.ajax({
+                "url": "@Url.Action("Guardar","Paises")",
+                "type": "POST",
+                "data": JSON.stringify($data),
+                "contentType": "application/json, charset=utf-8",
+                success:function(response) {
+                    if (response.resultado) {
+                        $("#modalPais").modal('hide');
+                        toastr.success(response.mensaje);
+                        tablaPaises.ajax.reload();
+                    } else {
+                        toastr.error(response.mensaje);
+
+                    }
+                },
+                error:function(response) {
+                    toastr.error(response.mensaje);
+                }
+            });
+        }
+        function Eliminar($paisId) {
+            if ($paisId != 0) {
+                $.ajax({
+                    "url": "@Url.Action("GetPais","Paises")" + "?paisId=" + $paisId,
+                    "type": "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        console.log(data);
+                        if (data != null) {
+      Swal.fire({
+                title: '¿Desea eliminar el registro de '+data.NombrePais+'?',
+                text: 'No se le permitirá revertir la operación',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, borrar!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        "url": "@Url.Action("Eliminar","Paises")" + "?paisId=" + $PaisId,
+                        "type": "GET",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function(response) {
+                            console.log(response);
+                            if (response.resultado) {
+                                tablaPaises.ajax.reload();
+                                Swal.fire(
+                                    'Borrado!',
+                                    response.mensaje,
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Registro no Borrado!',
+                                    response.mensaje,
+                                    'error'
+                                );
+
+                            }
+
+
+                        }
+                    });
+
+                }
+            });
+
+                        }
+
+                    }
+                });
+            }
+
+
+
+        }
+
+    </script>
+}
