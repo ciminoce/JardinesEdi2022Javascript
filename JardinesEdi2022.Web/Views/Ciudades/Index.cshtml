@@ -52,7 +52,7 @@
                 <div class="row mt-3">
                     <div class="col-12">
                         <div id="mensajeError" class="alert alert-danger" role="alert">
-                            A simple danger alert—check it out!
+                            
                         </div>
                     </div>
                 </div>
@@ -118,14 +118,6 @@
             });
         }
 
-        //$("#tabla tbody").on("click",
-        //    '.btn-editar',
-        //    function() {
-        //        filaSeleccionada = $(this).closest("tr");
-        //        var datosCiudad = tablaCiudades.row(filaSeleccionada).data();
-        //        abrirModal(datosCiudad);
-
-        //    });
 
 
         function abrirModal($ciudadId) {
@@ -176,7 +168,8 @@
                 processData: false,
                 contentType: false,
 
-                success:function(response) {
+                success: function (response) {
+                    $(".modal-body").LoadingOverlay("hide");
                     if (response.respuesta) {
                         toastr.success(response.mensaje);
                         $('#modalCiudad').modal('hide');
@@ -185,7 +178,19 @@
                         $("#mensajeError").text(response.mensaje);
                         $("#mensajeError").show();
                     }
+                },
+                error:function() {
+                    console.log('error');
+                },
+                beforeSend:function() {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactory: 2,
+                        text: "Guardando...",
+                        size: 14
+                    });
+
                 }
+
             });
         }
 
