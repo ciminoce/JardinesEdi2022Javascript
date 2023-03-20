@@ -17,7 +17,6 @@ namespace JardinesEdi2022.Web.ViewModels.Producto
         public int NivelDeReposicion { get; set; }
         public bool Suspendido { get; set; }
         public string Imagen { get; set; }
-        public HttpPostedFileBase ImagenFile { get; set; }
-
+        //quite el atributo  httpFilePosted
     }
 }

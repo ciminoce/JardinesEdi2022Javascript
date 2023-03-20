@@ -244,8 +244,8 @@
                 $('#txtLatinProducto').val('');
                 $('#txtPrecioProducto').val('');
                 $('#txtStockProducto').val('');
-                $('#cboCategoria').val($('#cboCategoria select:first').val());
-                $('#cboProveedor').val($('#cboProveedor select:first').val());
+                $('#cboCategoria').val($('#cboCategoria option:first').val());
+                $('#cboProveedor').val($('#cboProveedor option:first').val());
                 $('#imgProducto').removeAttr('src');
                 $('#chkSuspendido').prop("checked", false);
             } else {
@@ -269,7 +269,7 @@
                             $('#imgProducto').attr('src', "@Url.Content(@WC.ProductImageFolder+@WC.SinImagenDisponible)");
 
                         } else {
-                            $('#imgProducto').attr('src', data.Imagen);
+                            $('#imgProducto').attr('src', "@WC.ProductImageFolder+data.Imagen");
 
                         }
                         $('#chkSuspendido').prop("checked", data.Suspendido);
@@ -280,6 +280,60 @@
                 });
             }
             $('#modalProducto').modal('show');
+        }
+
+        function Guardar() {
+
+            var archivoSeleccionado = $('#fileProducto')[0].files[0];
+
+            var producto = {
+                ProductoId: $("#txtProductoId").val(),
+                NombreProducto: $("#txtNombreProducto").val(),
+                NombreLatin: $('#txtLatinProducto').val(),
+                CategoriaId: $("#cboCategoria option:selected").val(),
+                ProveedorId: $("#cboProveedor option:selected").val(),
+                PrecioUnitario: $('#txtPrecioProducto').val(),
+                UnidadesEnStock: $('#txtStockProducto').val(),
+                Descripcion: $('#txtDescripcionProducto').val(),
+                Suspendido: $('#chkSuspendido').val(),
+                
+        }
+            console.log(producto);
+            var request = new FormData();
+            request.append("objeto", JSON.stringify(producto));
+            request.append("imagenArchivo", archivoSeleccionado);
+            $.ajax({
+                "url": "@Url.Action("Guardar","Productos")",
+                "type": "POST",
+                "dataType": "json",
+                data: request,
+                processData: false,
+                contentType: false,
+
+                success: function (response) {
+                    $(".modal-body").LoadingOverlay("hide");
+                    if (response.respuesta) {
+                        toastr.success(response.mensaje);
+                        $('#modalProducto').modal('hide');
+                        tablaProductos.ajax.reload();
+                    } else {
+                        $("#mensajeError").text(response.mensaje);
+                        $("#mensajeError").show();
+                    }
+                },
+                error:function() {
+                    console.log('error');
+                },
+                beforeSend:function() {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactory: 2,
+                        text: "Guardando...",
+                        size: 14
+                    });
+
+                }
+
+            });
         }
 
     </script>
