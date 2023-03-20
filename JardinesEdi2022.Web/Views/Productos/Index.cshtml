@@ -36,10 +36,10 @@
 
                     <div class="col-sm-3">
                         <div class="mb-2">
-                            <img id="imgProducto" height="197" width="200" class="border rounded mx-auto img-fluid d-block"/>
+                            <img id="imgProducto" height="197" width="200" class="border rounded mx-auto img-fluid d-block" />
                         </div>
                         <div class="mb-2">
-                            <input type="file" id="fileProducto" accept="image/png, image/jpg, image/jpeg" onchange="mostrarImagen(this)"/>
+                            <input type="file" id="fileProducto" accept="image/png, image/jpg, image/jpeg" onchange="mostrarImagen(this)" />
                         </div>
 
                     </div>
@@ -47,7 +47,7 @@
                     <div class="col-sm-3">
                         <div class="mb-3">
                             <label class="form-label">Nombre:</label>
-                            <input type="text" id="txtNombreProducto" class="form-control" name="nombreProducto"/>
+                            <input type="text" id="txtNombreProducto" class="form-control" name="nombreProducto" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Descripción:</label>
@@ -59,15 +59,15 @@
                     <div class="col-sm-3">
                         <div class="mb-3">
                             <label class="form-label">Nombre Latín:</label>
-                            <input type="text" id="txtLatinProducto" class="form-control" name="latinProducto"/>
+                            <input type="text" id="txtLatinProducto" class="form-control" name="latinProducto" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Categoría:</label>
-                            <select id="cboCategoria" class="form-select"></select>
+                            <select id="cboCategoria" name="cboCategoria" class="form-select"></select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Proveedor:</label>
-                            <select id="cboProveedor" class="form-select"></select>
+                            <select id="cboProveedor" name="cboProveedor" class="form-select"></select>
                         </div>
 
 
@@ -188,7 +188,7 @@
                 "contentType": "application/json, charset=utf-8",
                 success: function (proveedores) {
                     console.log(proveedores);
-                    $('#cboProveedor').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
+                    $('#cboProveedor').append('<option selected disabled value = "" > ' + 'Seleccione' + '</option>');
                     $.each(proveedores.data,
                         function(index, proveedor) {
                             $('#cboProveedor').append('<option value="' + proveedor.ProveedorId + '">' + proveedor.NombreProveedor + '</option>');
@@ -210,7 +210,7 @@
                 "contentType": "application/json, charset=utf-8",
                 success: function (categorias) {
                     console.log(categorias);
-                    $('#cboCategoria').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
+                    $('#cboCategoria').append('<option selected disabled value = "" > ' + 'Seleccione' + '</option>');
                     $.each(categorias.data,
                         function(index, categoria) {
                             $('#cboCategoria').append('<option value="' + categoria.CategoriaId + '">' + categoria.NombreCategoria + '</option>');
@@ -282,6 +282,53 @@
             $('#modalProducto').modal('show');
         }
 
+        $.validator.addMethod('formatoPrecio', function(value, element) {
+            return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
+        }, "Ingrese el precio en el formato 0.00");
+
+        $.validator.addMethod("valorNoIgual", function(value, element, arg){
+            return arg != element.value;
+        }, "Valor no puede ser igual al argumento.");
+
+
+        $('#contenedor').validate({
+            rules: {
+                nombreProducto: {
+                    required: true,
+                    rangelength:[3,50]
+                },
+                precioProducto: {
+                    required: true,
+                    formatoPrecio:true
+                },
+                stockProducto: {
+                    required:true
+                },
+                cboCategoria: {
+                    required:true
+                },
+                cboProveedor: {
+                    required:true
+                }
+            },
+            messages: {
+                nombreProducto: {
+                    required: "-Nombre del Producto es requerido",
+                    rangelength:"-El nombre del producto debe contener entre 3 y 50 caracteres"
+                },
+                precioProducto: {
+                    required: "-El precio del producto es requerido",
+                    formatoPrecio:"-Ingrese el precio en el formato 0.00"
+                },
+                stockProducto: "-El stock del producto es requerido",
+                cboCategoria: "-Seleccione una categoría",
+                cboProveedor:"-Seleccione un proveedor"
+            },
+            errorElement:"div",
+            errorLabelContainer:".alert-danger"
+        });
+
+
         function Guardar() {
 
             var archivoSeleccionado = $('#fileProducto')[0].files[0];
@@ -295,8 +342,8 @@
                 PrecioUnitario: $('#txtPrecioProducto').val(),
                 UnidadesEnStock: $('#txtStockProducto').val(),
                 Descripcion: $('#txtDescripcionProducto').val(),
-                Suspendido: $('#chkSuspendido').val(),
-                
+                Suspendido: $('#chkSuspendido').val()
+
         }
             console.log(producto);
             var request = new FormData();

@@ -27,6 +27,7 @@ namespace JardinesEdi2022.Web
                       "~/Scripts/toastr.js",
                       "~/Scripts/sweetalert2.all.min.js",
                       "~/Scripts/loadingoverlay.min.js",
+                      "~/Scripts/jquery.validate.js",
                       "~/Scripts/SiteJs.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
