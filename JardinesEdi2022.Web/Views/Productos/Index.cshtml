@@ -1,0 +1,286 @@
+﻿@using JardinesEdi2022.Utilidades
+@{
+    ViewBag.Title = "Index";
+}
+<div class="card">
+    <h5 class="card-header bg-primary text-white">Listado de Productos</h5>
+    <div class="card-body">
+        <button id="btnNuevo" onclick="abrirModal(0)" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+        <hr />
+        <table id="tabla" class="table display cell-border">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Suspendido</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Datos del Producto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtProductoId" value="0" />
+                <form id="contenedor" class="row">
+
+                    <div class="col-sm-3">
+                        <div class="mb-2">
+                            <img id="imgProducto" height="197" width="200" class="border rounded mx-auto img-fluid d-block"/>
+                        </div>
+                        <div class="mb-2">
+                            <input type="file" id="fileProducto" accept="image/png, image/jpg, image/jpeg" onchange="mostrarImagen(this)"/>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre:</label>
+                            <input type="text" id="txtNombreProducto" class="form-control" name="nombreProducto"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción:</label>
+                            <textarea type="text" id="txtDescripcionProducto" class="form-control" name="descripcionProducto" style="height: 125px; resize: none"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Latín:</label>
+                            <input type="text" id="txtLatinProducto" class="form-control" name="latinProducto"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría:</label>
+                            <select id="cboCategoria" class="form-select"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Proveedor:</label>
+                            <select id="cboProveedor" class="form-select"></select>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Precio:</label>
+                            <input type="text" id="txtPrecioProducto" class="form-control" name="precioProducto" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Stock:</label>
+                            <input type="text" id="txtStockProducto" class="form-control" name="stockProducto" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Suspendido:</label>
+                            <input type="checkbox" name="suspendidoProducto" id="chkSuspendido" value="false">
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var tablaProductos;
+        $(document).ready(function () {
+            CargarComboCategorias();
+            CargarComboProveedores();
+
+            tablaProductos = $('#tabla').DataTable({
+                "language": {
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encontrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetProductos", "Productos")",
+                    "type": "GET",
+                    "dataType": "json"
+                },
+                "columns": [
+                    { "data": "NombreProducto" },
+                    { "data": "Categoria" },
+                    { "data": "PrecioUnitario" },
+                    { "data": "UnidadesEnStock" },
+                    {
+                        "data": "Suspendido",render:function(data) {
+                            if (data == true) {
+
+                                return '<span class="badge text-bg-danger">SI</span>';
+
+
+                            } else {
+
+                                return '<span class="badge text-bg-success">NO</span>';
+                            }
+                        }
+
+
+                    },
+                    {
+                        "data": "ProductoId",
+                        render: function(data) {
+                            return "<button class='btn btn-warning btn-sm btn-editar' type='button' onclick='abrirModal(" +
+                                data +
+                                ")'><i class='fas fa-pen'></i></button> " +
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='Eliminar(" +
+                                data +
+                                ")'><i class='fas fa-trash'></i></button> ";
+                        }
+                    }
+                ]
+            });
+        });
+
+        function CargarComboProveedores() {
+            $('#cboProveedor').empty();
+            $.ajax({
+                "url": "@Url.Action("GetProveedores","Productos")",
+                "type": "GET",
+                "dataType": "json",
+                "contentType": "application/json, charset=utf-8",
+                success: function (proveedores) {
+                    console.log(proveedores);
+                    $('#cboProveedor').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
+                    $.each(proveedores.data,
+                        function(index, proveedor) {
+                            $('#cboProveedor').append('<option value="' + proveedor.ProveedorId + '">' + proveedor.NombreProveedor + '</option>');
+                        });
+                }
+
+
+            });
+        }
+
+
+
+        function CargarComboCategorias() {
+            $('#cboCategoria').empty();
+            $.ajax({
+                "url": "@Url.Action("GetCategorias","Productos")",
+                "type": "GET",
+                "dataType": "json",
+                "contentType": "application/json, charset=utf-8",
+                success: function (categorias) {
+                    console.log(categorias);
+                    $('#cboCategoria').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
+                    $.each(categorias.data,
+                        function(index, categoria) {
+                            $('#cboCategoria').append('<option value="' + categoria.CategoriaId + '">' + categoria.NombreCategoria + '</option>');
+                        });
+                }
+
+
+            });
+        }
+
+
+        function mostrarImagen(input) {
+            if (input.files) {
+                var reader = new FileReader();
+                reader.onload=function(e) {
+                    $('#imgProducto').attr('src', e.target.result).width(200).height(197);
+
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function abrirModal($ProductoId) {
+            $('#mensajeError').hide();
+            //CargarComboCategorias();
+            //CargarComboProveedores();
+            if ($ProductoId==0) {
+                $('#txtProductoId').val(0);
+                $('#txtNombreProducto').val('');
+                $('#txtDescripcionProducto').val('');
+                $('#txtLatinProducto').val('');
+                $('#txtPrecioProducto').val('');
+                $('#txtStockProducto').val('');
+                $('#cboCategoria').val($('#cboCategoria select:first').val());
+                $('#cboProveedor').val($('#cboProveedor select:first').val());
+                $('#imgProducto').removeAttr('src');
+                $('#chkSuspendido').prop("checked", false);
+            } else {
+                $.ajax({
+                    "url": "@Url.Action("GetProducto","Productos")" + "?productoId=" + $ProductoId,
+                    "type": "GET",
+                    "dataType": "json",
+                    "contentType": "application/json, charset=utf-8",
+                    success: function (data) {
+                        console.log(data);
+                        debugger;
+                        $('#txtProductoId').val(data.ProductoId);
+                        $('#txtNombreProducto').val(data.NombreProducto);
+                        $('#txtDescripcionProducto').val(data.Descripcion);
+                        $('#txtLatinProducto').val(data.NombreLatin);
+                        $('#txtPrecioProducto').val(data.PrecioUnitario);
+                        $('#txtStockProducto').val(data.UnidadesEnStock);
+                        $('#cboCategoria').val(data.CategoriaId);
+                        $('#cboProveedor').val(data.ProveedorId);
+                        if (data.Imagen==null) {
+                            $('#imgProducto').attr('src', "@Url.Content(@WC.ProductImageFolder+@WC.SinImagenDisponible)");
+
+                        } else {
+                            $('#imgProducto').attr('src', data.Imagen);
+
+                        }
+                        $('#chkSuspendido').prop("checked", data.Suspendido);
+                    },
+                    error:function(err) {
+                        console.log(err);
+                    }
+                });
+            }
+            $('#modalProducto').modal('show');
+        }
+
+    </script>
+}

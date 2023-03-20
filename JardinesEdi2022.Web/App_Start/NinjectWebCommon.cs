@@ -96,7 +96,7 @@ namespace JardinesEdi2022.Web.App_Start
 
 
             kernel.Bind<IUnitOfWork>().To<UnitOfWork>().InRequestScope();
-            kernel.Bind<ViveroSqlDbContext>().ToSelf().InSingletonScope();
+            kernel.Bind<ViveroSqlDbContext>().ToSelf().InThreadScope();
 
         }
     }

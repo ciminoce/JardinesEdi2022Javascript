@@ -151,6 +151,7 @@
     <Compile Include="Controllers\CiudadesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PaisesController.cs" />
+    <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -161,6 +162,9 @@
     <Compile Include="ViewModels\Pais\PaisEditVm.cs" />
     <Compile Include="ViewModels\Pais\PaisListVm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\Producto\ProductoEditVm.cs" />
+    <Compile Include="ViewModels\Producto\ProductoListVm.cs" />
+    <Compile Include="ViewModels\Proveedor\ProveedorListVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -354,6 +358,10 @@
     <Content Include="Content\fontawesome\v4-shims.min.css" />
     <Content Include="Content\fontawesome\v5-font-face.css" />
     <Content Include="Content\fontawesome\v5-font-face.min.css" />
+    <Content Include="Content\Imagenes\Productos\0110d00f-0089-484f-8118-16200722c4e0.jfif.jfif" />
+    <Content Include="Content\Imagenes\Productos\10a86b58-fc90-4f5d-bc05-cadffc934a1e.jfif" />
+    <Content Include="Content\Imagenes\Productos\8cb19507-2fc9-4d34-8d3b-1334c201fb8a.jfif" />
+    <Content Include="Content\Imagenes\Productos\SinImagenDisponible.jpg" />
     <Content Include="Content\SiteStyles.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
@@ -516,6 +524,7 @@
     <Content Include="Views\Paises\Index.cshtml" />
     <Content Include="Views\Categorias\Index.cshtml" />
     <Content Include="Views\Ciudades\Index.cshtml" />
+    <Content Include="Views\Productos\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

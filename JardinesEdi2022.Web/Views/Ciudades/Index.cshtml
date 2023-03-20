@@ -106,10 +106,12 @@
                 "type": "GET",
                 "dataType": "json",
                 "contentType": "application/json, charset=utf-8",
-                success:function(paises) {
+                success: function (paises) {
+                    console.log(paises);
                     $('#cboPais').append('<option selected disabled value = "0" > ' + 'Seleccione' + '</option>');
                     $.each(paises.data,
-                        function(index, pais) {
+                        function (index, pais) {
+                            console.log(pais);
                             $('#cboPais').append('<option value="' + pais.PaisId + '">' + pais.NombrePais + '</option>');
                         });
                 }
