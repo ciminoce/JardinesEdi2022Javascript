@@ -152,6 +152,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PaisesController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,6 +165,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Producto\ProductoEditVm.cs" />
     <Compile Include="ViewModels\Producto\ProductoListVm.cs" />
+    <Compile Include="ViewModels\Proveedor\ProveedorEditVm.cs" />
     <Compile Include="ViewModels\Proveedor\ProveedorListVm.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -525,6 +527,7 @@
     <Content Include="Views\Categorias\Index.cshtml" />
     <Content Include="Views\Ciudades\Index.cshtml" />
     <Content Include="Views\Productos\Index.cshtml" />
+    <Content Include="Views\Proveedores\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

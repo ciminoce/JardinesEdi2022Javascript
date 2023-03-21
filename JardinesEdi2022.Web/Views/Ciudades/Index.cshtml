@@ -41,7 +41,6 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="cboPais" class="form-label">País</label>
-
                         <select id="cboPais" class="form-select" aria-label="Default select example">
                         </select>
                     </div>
@@ -154,10 +153,6 @@
                 CiudadId: $("#txtCiudadId").val(),
                 NombreCiudad: $("#txtNombreCiudad").val(),
                 PaisId: $("#cboPais option:selected").val(),
-            //    Pais: {
-            //        PaisId: $("#cboPais option:selected").val(),
-            //        NombrePais: $("#cboPais option:selected").text()
-            //    }
             }
             console.log(ciudad);
             var request = new FormData();

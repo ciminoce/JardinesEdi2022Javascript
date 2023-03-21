@@ -44,11 +44,11 @@ namespace JardinesEdi2022.Servicios.Servicios
             }
         }
 
-        public void Guardar(Proveedor pais)
+        public void Guardar(Proveedor proveedor)
         {
             try
             {
-                _repositorio.Guardar(pais);
+                _repositorio.Guardar(proveedor);
                 _unitOfWork.Save();
             }
             catch (Exception e)

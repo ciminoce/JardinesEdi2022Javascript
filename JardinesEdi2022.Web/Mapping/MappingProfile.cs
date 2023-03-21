@@ -28,6 +28,7 @@ namespace JardinesEdi2022.Web.Mapping
             CreateMap<Proveedor, ProveedorListVm>()
                 .ForMember(dest => dest.Pais, opt => opt.MapFrom(src => src.Pais.NombrePais))
                 .ForMember(dest => dest.Ciudad, opt => opt.MapFrom(src => src.Ciudad.NombreCiudad));
+            CreateMap<Proveedor, ProveedorEditVm>();
         }
 
         private void LoadProductosMapping()

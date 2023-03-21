@@ -1,0 +1,326 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<div class="card">
+    <h5 class="card-header bg-primary text-white">Listado de Proveedores</h5>
+    <div class="card-body">
+        <button id="btnNuevo" onclick="abrirModal(0)" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+        <hr />
+        <table id="tabla" class="table display cell-border">
+            <thead>
+                <tr>
+                    <th>Proveedor</th>
+                    <th>Dirección</th>
+                    <th>CP</th>
+                    <th>Ciudad</th>
+                    <th>País</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalProveedor" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Datos del Proveedor</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtProveedorId" value="0" />
+                <form>
+                    <div class="row">
+                        <div class="col w-100">
+                            <label for="txtNombreProveedor" class="form-label">Nombre Proveedor</label>
+                            <input type="text" class="form-control d-block w-100" id="txtNombreProveedor" placeholder="Ingrese nombre">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <label for="txtDireccionProveedor" class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="txtDireccionProveedor" placeholder="Ingrese dirección">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="txtCodPostal" class="form-label">Cod. Postal</label>
+                            <input type="text" class="form-control" id="txtCodPostal" placeholder="Cod.Postal.">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="cboPais" class="form-label">País</label>
+
+                            <select id="cboPais" class="form-select" aria-label="Default select example">
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cboCiudad" class="form-label">Ciudad</label>
+
+                            <select id="cboCiudad" class="form-select" aria-label="Default select example">
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                </form>
+
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        var tablaProveedores;
+        var ciudadDelProveedor = 0;
+        $(document).ready(function() {
+            CargarComboPaises();
+            tablaProveedores = $('#tabla').DataTable({
+                "ajax": {
+                    "url": "@Url.Action("GetProveedores", "Proveedores")",
+                    "type": "GET",
+                    "dataType": "json"
+
+                },
+                "columns": [
+                    { "data": "NombreProveedor" },
+                    { "data": "Direccion" },
+                    { "data": "CodigoPostal" },
+                    { "data": "Ciudad" },
+                    { "data": "Pais" },
+                    {
+                        "data": "ProveedorId",
+                        "render": function(data) {
+                            return "<button class='btn btn-warning btn-sm btn-editar' type='button' onclick='abrirModal(" +
+                                data +
+                                ")'><i class='fas fa-pen'></i></button> " +
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='Eliminar(" +
+                                data +
+                                ")'><i class='fas fa-trash'></i></button> ";
+                        }
+                    }
+                ]
+            });
+        });
+
+        $('#cboPais').change(function() {
+            var paisId = $('#cboPais').val();
+            if (paisId > 0) {
+                CargarComboCiudades();
+
+            }
+        });
+
+        function CargarComboPaises() {
+            $('#cboPais').empty();
+            $('#cboCiudad').empty();
+            $.ajax({
+                "url": "@Url.Action("GetPaises", "Proveedores")",
+                "type": "GET",
+                "dataType": "json",
+                "contentType": "application/json, charset=utf-8",
+                success: function(paises) {
+                    console.log(paises);
+                    $('#cboPais').append('<option selected disabled value = "" > ' + 'Seleccione' + '</option>');
+                    $.each(paises.data,
+                        function(index, pais) {
+                            $('#cboPais').append('<option value="' + pais.PaisId + '">' + pais.NombrePais + '</option>');
+                        });
+                }
+
+
+            });
+        }
+
+        function CargarComboCiudades() {
+            var paisId = $('#cboPais').val();
+            $('#cboCiudad').empty();
+            $.ajax({
+                "url": "@Url.Action("GetCiudades", "Proveedores")" + "?paisId=" + paisId,
+                "type": "POST",
+                "dataType": "json",
+                "contentType": "application/json, charset=utf-8",
+                success: function(ciudades) {
+                    console.log(ciudades);
+                    $('#cboCiudad').append('<option selected disabled value = "" > ' + 'Seleccione' + '</option>');
+                    $.each(ciudades.data,
+                        function(index, ciudad) {
+                            $('#cboCiudad').append('<option value="' + ciudad.CiudadId + '">' + ciudad.NombreCiudad + '</option>');
+                        });
+                    if (ciudadDelProveedor != 0) {
+                        $('#cboCiudad option[value=' + ciudadDelProveedor + ']').attr("selected", true);
+
+                    }
+                }
+
+
+            });
+
+        }
+
+
+        function abrirModal($ProveedorId) {
+            $('#mensajeError').hide();
+            if ($ProveedorId == 0) {
+                $("#txtProveedorId").val(0);
+                $("#txtNombreProveedor").val('');
+                $("#txtDireccionProveedor").val('');
+                $("#txtCodPostal").val('');
+                $("#cboPais option:first").val();
+                $("#cboCiudad option:first").val();
+            } else {
+                $.ajax({
+                    "url": "@Url.Action("GetProveedor", "Proveedores")" + "?proveedorId=" + $ProveedorId,
+                    "type": "GET",
+                    "dataType": "json",
+                    "contentType": "application/json, charset=utf-8",
+                    success: function(proveedor) {
+                        ciudadDelProveedor = proveedor.CiudadId;
+                        $("#txtProveedorId").val(proveedor.ProveedorId);
+                        $("#cboPais").val(proveedor.PaisId);
+                        CargarComboCiudades();
+                        $("#txtNombreProveedor").val(proveedor.NombreProveedor);
+                        $("#txtDireccionProveedor").val(proveedor.Direccion);
+                        $("#txtCodPostal").val(proveedor.CodigoPostal);
+                        $("#cboCiudad").val(proveedor.CiudadId);
+
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+
+                });
+            }
+            $('#modalProveedor').modal('show');
+        }
+
+
+        function Guardar() {
+            var proveedor = {
+                ProveedorId: $("#txtProveedorId").val(),
+                NombreProveedor: $("#txtNombreProveedor").val(),
+                Direccion: $("#txtDireccionProveedor").val(),
+                CodigoPostal: $("#txtCodPostal").val(),
+                PaisId: $("#cboPais option:selected").val(),
+                CiudadId: $("#cboCiudad option:selected").val()
+            }
+            console.log(proveedor);
+            var request = new FormData();
+            request.append("objeto", JSON.stringify(proveedor));
+            $.ajax({
+                "url": "@Url.Action("Create", "Proveedores")",
+                "type": "POST",
+                "dataType": "json",
+                data: request,
+                processData: false,
+                contentType: false,
+
+                success: function(response) {
+                    $(".modal-body").LoadingOverlay("hide");
+                    if (response.respuesta) {
+                        toastr.success(response.mensaje);
+                        $('#modalProveedor').modal('hide');
+                        tablaProveedores.ajax.reload();
+                    } else {
+                        $("#mensajeError").text(response.mensaje);
+                        $("#mensajeError").show();
+                    }
+                },
+                error: function() {
+                    console.log('error');
+                },
+                beforeSend: function() {
+                    $(".modal-body").LoadingOverlay("show",
+                        {
+                            imageResizeFactory: 2,
+                            text: "Guardando...",
+                            size: 14
+                        });
+
+                }
+
+            });
+        };
+
+        function Eliminar($ProveedorId) {
+            if ($ProveedorId != 0) {
+                $.ajax({
+                    "url": "@Url.Action("GetProveedor", "Proveedores")" + "?proveedorId=" + $ProveedorId,
+                    "type": "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        console.log(data);
+                        if (data != null) {
+                            Swal.fire({
+                                title: '¿Desea eliminar el registro de ' + data.NombreProveedor + '?',
+                                text: 'No se le permitirá revertir la operación',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Sí, borrar!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        "url": "@Url.Action("Eliminar", "Proveedores")" + "?proveedorId=" + $ProveedorId,
+                                        "type": "GET",
+                                        dataType: "json",
+                                        contentType: "application/json; charset=utf-8",
+                                        success: function(response) {
+                                            console.log(response);
+                                            if (response.respuesta) {
+                                                tablaProveedores.ajax.reload();
+
+                                                Swal.fire(
+                                                    'Borrado!',
+                                                    response.mensaje,
+                                                    'success'
+                                                );
+                                            } else {
+                                                Swal.fire(
+                                                    'Registro no Borrado!',
+                                                    response.mensaje,
+                                                    'error'
+                                                );
+
+                                            }
+
+
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        }
+
+                    }
+                });
+            };
+        }
+
+    </script>
+}

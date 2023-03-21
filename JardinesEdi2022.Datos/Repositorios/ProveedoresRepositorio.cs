@@ -34,8 +34,17 @@ namespace JardinesEdi2022.Datos.Repositorios
         {
             try
             {
-                _context.Paises.Attach(proveedor.Pais);
-                _context.Ciudades.Attach(proveedor.Ciudad);
+                if (proveedor.Pais!=null)
+                {
+                    _context.Paises.Attach(proveedor.Pais);
+                    
+                }
+
+                if (proveedor.Ciudad != null)
+                {
+                    _context.Ciudades.Attach(proveedor.Ciudad);
+
+                }
                 if (proveedor.ProveedorId == 0)
                 {
                     //Cuando el id=0 entonces la entidad es nueva ==>alta
@@ -128,7 +137,9 @@ namespace JardinesEdi2022.Datos.Repositorios
         {
             try
             {
-                return _context.Proveedores.OrderBy(c => c.NombreProveedor).ToList();
+                return _context.Proveedores.Include(p=>p.Pais)
+                    .Include(p=>p.Ciudad)
+                    .OrderBy(p => p.NombreProveedor).ToList();
             }
             catch (Exception e)
             {
