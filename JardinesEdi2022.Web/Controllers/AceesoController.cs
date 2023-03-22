@@ -67,8 +67,15 @@ namespace JardinesEdi2022.Web.Controllers
             TempData["usuarioId"] = null;
             Session["usuario"] = usuario;
             FormsAuthentication.SetAuthCookie(usuario.Correo, false);
+            if (usuario.Rol == WC.CustomerRole)
+            {
+                return RedirectToAction("Index", "Tienda");
 
-            return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         public ActionResult Register()

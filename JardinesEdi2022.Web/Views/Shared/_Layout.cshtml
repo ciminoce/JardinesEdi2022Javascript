@@ -38,13 +38,13 @@
                             muestro el botón para que lo haga
                             caso contrario muestro el control para acceder al carrito y
                             los datos del cliente logueado*@
-                        @if (Session["Cliente"] == null)
+                        @if (Session["usuario"] == null)
                         {
                             <a class="btn btn-outline-dark" aria-current="page" href="@Url.Action("LogIn", "Aceeso")"><i class="fas fa-sign-out-alt me-1"></i>Iniciar Sesión</a>
                         }
                         else
                         {
-                            <a class="btn btn-outline-dark" href="@Url.Action("Carrito", "Tienda")">
+                            <a class="btn btn-outline-dark" href="@Url.Action("Mo", "Tienda")">
                                 <i class="fas fa-shopping-cart me-1"></i>
                                 Carrito
                                 <span class="badge bg-dark text-white ms-1 rounded-pill" id="cantidadEnCarrito">0</span>

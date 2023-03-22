@@ -23,15 +23,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-sm-12">
-                        <div class="d-grid gap-2">
-                            <button id="btnAplicarFiltros" class="btn btn-outline-dark btn-block">
-                                <i class="fas fa-filter"></i>Aplicar Filtros
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="col-sm-9">
@@ -192,7 +183,7 @@
                                 ),
                                 $("<div>").addClass("card-footer p-4 pt-0 border-top-0 bg-transparent").append(
                                     $("<div>").addClass("d-grid gap-2").append(
-                                        @if (Session["cliente"] != null)
+                                        @if (Session["usuario"] != null)
                                         {
                                             //se cambió productoId x productoid en minúsculas
                                             @:$("<button>").addClass("btn btn-success mt-auto agregarCarrito").data("productoid", producto.ProductoId).text("Agregar a Carrito"),
