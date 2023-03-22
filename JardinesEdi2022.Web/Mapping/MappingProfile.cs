@@ -36,6 +36,8 @@ namespace JardinesEdi2022.Web.Mapping
             CreateMap<Producto, ProductoListVm>().ForMember(dest => dest.Categoria,
                 opt => opt.MapFrom(src => src.Categoria.NombreCategoria));
             CreateMap<Producto, ProductoEditVm>().ReverseMap();
+            CreateMap<Producto, ProductoDetalleVm>().ForMember(dest => dest.Categoria,
+                opt => opt.MapFrom(src => src.Categoria.NombreCategoria));
         }
 
         private void LoadCiudadesMapping()

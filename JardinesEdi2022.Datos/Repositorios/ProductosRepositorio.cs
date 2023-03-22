@@ -181,6 +181,13 @@ namespace JardinesEdi2022.Datos.Repositorios
         {
             try
             {
+                if (categoriaId == 0)
+                {
+                    return _context.Productos
+                        .OrderBy(c => c.NombreProducto)
+                        .ToList();
+
+                }
                 return _context.Productos
                     .Where(p=>p.CategoriaId==categoriaId)
                     .OrderBy(c => c.NombreProducto)

@@ -147,12 +147,14 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AceesoController.cs" />
     <Compile Include="Controllers\CategoriasController.cs" />
     <Compile Include="Controllers\CiudadesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PaisesController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProveedoresController.cs" />
+    <Compile Include="Controllers\TiendaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -160,9 +162,11 @@
     <Compile Include="ViewModels\Categoria\CategoriaEditVm.cs" />
     <Compile Include="ViewModels\Categoria\CategoriaListVm.cs" />
     <Compile Include="ViewModels\Ciudad\CiudadListVm.cs" />
+    <Compile Include="ViewModels\Cliente\ClienteEditVm.cs" />
     <Compile Include="ViewModels\Pais\PaisEditVm.cs" />
     <Compile Include="ViewModels\Pais\PaisListVm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\Producto\ProductoDetalleVm.cs" />
     <Compile Include="ViewModels\Producto\ProductoEditVm.cs" />
     <Compile Include="ViewModels\Producto\ProductoListVm.cs" />
     <Compile Include="ViewModels\Proveedor\ProveedorEditVm.cs" />
@@ -365,6 +369,7 @@
     <Content Include="Content\Imagenes\Productos\8cb19507-2fc9-4d34-8d3b-1334c201fb8a.jfif" />
     <Content Include="Content\Imagenes\Productos\SinImagenDisponible.jpg" />
     <Content Include="Content\SiteStyles.css" />
+    <Content Include="Content\StylesLogin.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
@@ -528,6 +533,12 @@
     <Content Include="Views\Ciudades\Index.cshtml" />
     <Content Include="Views\Productos\Index.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Aceeso\Login.cshtml" />
+    <Content Include="Views\Aceeso\Register.cshtml" />
+    <Content Include="Views\Aceeso\PasswordRecovery.cshtml" />
+    <Content Include="Views\Aceeso\ResetPassword.cshtml" />
+    <Content Include="Views\Tienda\Index.cshtml" />
+    <Content Include="Views\Tienda\DetalleProducto.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -114,6 +114,7 @@
 {
     <script>
         var tablaProductos;
+        var imagenEnArchivo = "";
         $(document).ready(function () {
             CargarComboCategorias();
             CargarComboProveedores();
@@ -142,7 +143,8 @@
                 "ajax": {
                     "url": "@Url.Action("GetProductos", "Productos")",
                     "type": "GET",
-                    "dataType": "json"
+                    "dataType": "json",
+                    "contentType":"application/json, charset=utf-8"
                 },
                 "columns": [
                     { "data": "NombreProducto" },
@@ -173,7 +175,10 @@
                                 "<button class='btn btn-danger btn-sm' type='button' onclick='Eliminar(" +
                                 data +
                                 ")'><i class='fas fa-trash'></i></button> ";
-                        }
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "100px"
                     }
                 ]
             });
@@ -235,8 +240,6 @@
 
         function abrirModal($ProductoId) {
             $('#mensajeError').hide();
-            //CargarComboCategorias();
-            //CargarComboProveedores();
             if ($ProductoId==0) {
                 $('#txtProductoId').val(0);
                 $('#txtNombreProducto').val('');
@@ -246,8 +249,9 @@
                 $('#txtStockProducto').val('');
                 $('#cboCategoria').val($('#cboCategoria option:first').val());
                 $('#cboProveedor').val($('#cboProveedor option:first').val());
-                $('#imgProducto').removeAttr('src');
                 $('#chkSuspendido').prop("checked", false);
+                $('#imgProducto').attr('src', null);
+                
             } else {
                 $.ajax({
                     "url": "@Url.Action("GetProducto","Productos")" + "?productoId=" + $ProductoId,
@@ -255,8 +259,6 @@
                     "dataType": "json",
                     "contentType": "application/json, charset=utf-8",
                     success: function (data) {
-                        console.log(data);
-                        debugger;
                         $('#txtProductoId').val(data.ProductoId);
                         $('#txtNombreProducto').val(data.NombreProducto);
                         $('#txtDescripcionProducto').val(data.Descripcion);
@@ -269,7 +271,8 @@
                             $('#imgProducto').attr('src', "@Url.Content(@WC.ProductImageFolder+@WC.SinImagenDisponible)");
 
                         } else {
-                            $('#imgProducto').attr('src', "@WC.ProductImageFolder+data.Imagen");
+                            imagenEnArchivo = data.imagen;
+                            $('#imgProducto').attr('src', "@Url.Content(@WC.ProductImageFolder)"+data.Imagen);
 
                         }
                         $('#chkSuspendido').prop("checked", data.Suspendido);
@@ -342,13 +345,17 @@
                 PrecioUnitario: $('#txtPrecioProducto').val(),
                 UnidadesEnStock: $('#txtStockProducto').val(),
                 Descripcion: $('#txtDescripcionProducto').val(),
-                Suspendido: $('#chkSuspendido').val()
+                Suspendido: $('#chkSuspendido').val(),
+            }
 
-        }
+            if (archivoSeleccionado == null && imagenEnArchivo !== "") {
+                producto.Imagen = imagenEnArchivo;
+            }
             console.log(producto);
             var request = new FormData();
             request.append("objeto", JSON.stringify(producto));
             request.append("imagenArchivo", archivoSeleccionado);
+
             $.ajax({
                 "url": "@Url.Action("Guardar","Productos")",
                 "type": "POST",

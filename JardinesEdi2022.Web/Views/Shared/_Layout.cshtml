@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using JardinesEdi2022.Entidades.Entidades
+@using JardinesEdi2022.Utilidades
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -8,21 +10,106 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
+@if (Session["usuario"] == null || ((Usuario)Session["usuario"]).Rol == WC.CustomerRole)
+{
+    <!--Va a la tienda-->
+    <body class="d-flex flex-column min-vh-100">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="#!">Mi Tienda</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="@Url.Action("Index","Tienda")">Inicio</a></li>
+                        @*<li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="#!">All Products</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                                    <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                                </ul>
+                            </li>*@
+                    </ul>
+                    <form class="d-flex">
+                        @*Veo si el cliente no ha iniciado sesión, de ser así
+                            muestro el botón para que lo haga
+                            caso contrario muestro el control para acceder al carrito y
+                            los datos del cliente logueado*@
+                        @if (Session["Cliente"] == null)
+                        {
+                            <a class="btn btn-outline-dark" aria-current="page" href="@Url.Action("LogIn", "Aceeso")"><i class="fas fa-sign-out-alt me-1"></i>Iniciar Sesión</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-dark" href="@Url.Action("Carrito", "Tienda")">
+                                <i class="fas fa-shopping-cart me-1"></i>
+                                Carrito
+                                <span class="badge bg-dark text-white ms-1 rounded-pill" id="cantidadEnCarrito">0</span>
+                            </a>
 
+                            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" href="#!"><b>@User.Identity.Name</b></a></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("MisCompras", "Tienda")">Mis Compras</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("CerrarSesion", "Aceeso")">Logout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        }
+                    </form>
+                </div>
+            </div>
+        </nav>
+        @RenderBody()
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
+        </footer>
+
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+
+
+        <script>
+
+    $(document).ready(function() {
+        MostrarCantidadEnCarrito();
+    });
+
+    function MostrarCantidadEnCarrito(parameters) {
+        if ($("#cantidadEnCarrito").length>0) {
+            jQuery.ajax({
+                url: "@Url.Action("CantidadEnCarrito","Tienda")",
+                type: "GET",
+                dataType:"json",
+                contentType: "application/json; chartset=utf-8",
+                success:function(data) {
+                    $("#cantidadEnCarrito").text(data.cantidad);
+                }
+
+            });
+        }
+    }
+        </script>
+    </body>
+}
+else
+{
     <body class="sb-nav-fixed">
+
+
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
             <a class="navbar-brand ps-3" href="@Url.Action("Index","Home")">Jardines 2022 App</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-            <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
             <!-- Navbar-->
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                 <li class="nav-item dropdown">
@@ -41,12 +128,12 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            
+
                             <a class="nav-link" href="index.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
-                            
+
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Archivos
@@ -106,7 +193,7 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        
+
                         @RenderBody()
 
                     </div>
@@ -130,6 +217,8 @@
         @RenderSection("scripts", required: false)
 
     </body>
+
+}
 
 
 </html>

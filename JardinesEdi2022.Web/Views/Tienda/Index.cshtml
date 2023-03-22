@@ -1,0 +1,232 @@
+﻿@using JardinesEdi2022.Utilidades
+<!-- Header-->
+<header class="bg-dark py-5">
+    <div class="container-fluid px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Compre con Estilo Joder</h1>
+            <p class="lead fw-normal text-white-50 mb-0">En esta tienda de Plantas y afines en línea</p>
+        </div>
+    </div>
+</header>
+<!-- Section-->
+<section class="py-5">
+    <div class="container-fluid px-5 my-5">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header bg-black text-white">Categorías</div>
+                            <div id="contenedor_categorias" class="card-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="d-grid gap-2">
+                            <button id="btnAplicarFiltros" class="btn btn-outline-dark btn-block">
+                                <i class="fas fa-filter"></i>Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-9">
+                <div id="contenedor_productos" class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">Fancy Product</h5>
+                                    <!-- Product price-->
+                                    $40.00 - $80.00
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge-->
+                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">Special Item</h5>
+                                    <!-- Product reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                    </div>
+                                    <!-- Product price-->
+                                    <span class="text-muted text-decoration-line-through">$20.00</span>
+                                    $18.00
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+@section scripts
+{
+
+    <script>
+        $(document).ready(function() {
+            mostrarCategorias();
+            mostrarProductos(0);
+        });
+
+        function mostrarCategorias() {
+            $.ajax({
+                url: "@Url.Action("GetCategorias","Tienda")",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; chartset=utf-8",
+                success: function (categorias) {
+                    $("#contenedor_categorias").LoadingOverlay("hide");
+                    //<div class="form-check">
+                    //    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    //    <label class="form-check-label" for="flexRadioDefault1">
+                    //    Default radio
+                    //    </label>
+                    //    </div>
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({
+                            "type": "radio",
+                            "name": "categoria",
+                            "value": "0",
+                            "id": "cx",
+                            "checked": "checked"
+                        }).click(function() {
+                            var categoriaId = this.value;
+                            console.log(categoriaId);
+                            mostrarProductos(categoriaId);
+
+                        }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "cx" })
+                    ).appendTo("#contenedor_categorias");
+
+                    $.each(categorias.data,
+                        function(index, categoria) {
+
+                            $("<div>").addClass("form-check").append(
+                                $("<input>").addClass("form-check-input").attr({
+                                    "type": "radio",
+                                    "name": "categoria",
+                                    "value": categoria.CategoriaId,
+                                    "id": "c" + index
+
+                                }).click( function() {
+                                        var categoriaId = this.value;
+                                        console.log(categoria);
+                                        mostrarProductos(categoriaId);
+
+                                    }),
+                                $("<label>").addClass("form-check-label").text(categoria.NombreCategoria).attr({ "for": "c" + index })
+                            ).appendTo("#contenedor_categorias");
+
+                        });
+
+                },
+                beforeSend:function() {
+                    $("#contenedor_categorias").LoadingOverlay("show");
+                },
+                error:function() {
+
+                }
+            });
+
+
+        }
+
+
+        function mostrarProductos(categoriaSeleccionadaId) {
+
+            $.ajax({
+                url: "@Url.Action("GetProductos","Tienda")",
+                type: "POST",
+                dataType: "json",
+                data:JSON.stringify({categoriaId:categoriaSeleccionadaId}),
+                contentType: "application/json; chartset=utf-8",
+                success: function (productos) {
+                    $("#contenedor_productos").html("");
+                    $("#contenedor_productos").LoadingOverlay("hide");
+                    $.each(productos.data, function (index, producto) {
+                        console.log(producto);
+                        //debugger;
+                        $("<div>").addClass("col mb-5").append(
+                            $("<div>").addClass("card h-100").append(
+                                $("<img>").addClass("card-img-top").attr({ "src": "@Url.Content(@WC.ProductImageFolder+@WC.SinImagenDisponible)" }),
+                                $("<div>").addClass("card-body p-4").append(
+                                    $("<div>").addClass("text-center").append(
+                                        $("<h5>").addClass("fw-bolder").text(producto.NombreProducto),
+                                        "$ " + producto.PrecioUnitario.toFixed(2)
+
+                                    )
+                                ),
+                                $("<div>").addClass("card-footer p-4 pt-0 border-top-0 bg-transparent").append(
+                                    $("<div>").addClass("d-grid gap-2").append(
+                                        @if (Session["cliente"] != null)
+                                        {
+                                            //se cambió productoId x productoid en minúsculas
+                                            @:$("<button>").addClass("btn btn-success mt-auto agregarCarrito").data("productoid", producto.ProductoId).text("Agregar a Carrito"),
+
+                                        }
+                                        $("<a>").addClass("btn btn-dark mt-auto").attr({ "href": "@Url.Action("DetalleProducto","Tienda")" + "?productoId=" + producto.ProductoId }).text("Ver Detalle")
+
+                                    )
+                                )
+
+                            )
+                        ).appendTo("#contenedor_productos");
+
+                    });
+                },
+                beforeSend:function() {
+                    $("#contenedor_productos").LoadingOverlay("show");
+                },
+                error:function() {
+
+                }
+            });
+
+
+        }
+
+
+        $(document).on("click",
+            "button.agregarCarrito",
+            function () {
+                //se puso productoid con minúsculas y entre comillas simples
+                console.log($(this).data('productoid'));
+                debugger;
+            });
+
+    </script>
+}
