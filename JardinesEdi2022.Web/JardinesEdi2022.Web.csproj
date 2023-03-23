@@ -159,6 +159,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mapping\MappingProfile.cs" />
+    <Compile Include="ViewModels\Carrito\CarritoDetalleVm.cs" />
     <Compile Include="ViewModels\Categoria\CategoriaEditVm.cs" />
     <Compile Include="ViewModels\Categoria\CategoriaListVm.cs" />
     <Compile Include="ViewModels\Ciudad\CiudadListVm.cs" />
@@ -539,6 +540,7 @@
     <Content Include="Views\Aceeso\ResetPassword.cshtml" />
     <Content Include="Views\Tienda\Index.cshtml" />
     <Content Include="Views\Tienda\DetalleProducto.cshtml" />
+    <Content Include="Views\Tienda\Carrito.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

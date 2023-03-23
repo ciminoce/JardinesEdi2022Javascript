@@ -7,6 +7,7 @@ using AutoMapper;
 using JardinesEdi2022.Entidades.Entidades;
 using JardinesEdi2022.Servicios.Facades;
 using JardinesEdi2022.Web.App_Start;
+using JardinesEdi2022.Web.ViewModels.Carrito;
 using JardinesEdi2022.Web.ViewModels.Categoria;
 using JardinesEdi2022.Web.ViewModels.Producto;
 
@@ -60,16 +61,16 @@ namespace JardinesEdi2022.Web.Controllers
         [HttpGet]
         public JsonResult CantidadEnCarrito()
         {
-            //var clienteId = ((Cliente)Session["cliente"]).ClienteId;
-            //var cantidad = servicioCarritos.CantidadEnCarrito(clienteId);
-            //return Json(new { cantidad = cantidad }, JsonRequestBehavior.AllowGet);
-            return Json(1);
+            var clienteId = ((Usuario)Session["usuario"]).UsuarioId;
+            var cantidad = _carritosServicios.CantidadEnCarrito(clienteId);
+            return Json(new { cantidad = cantidad }, JsonRequestBehavior.AllowGet);
+           
         }
 
         [HttpPost]
         public JsonResult AgregarAlCarrito(int productoId)
         {
-            var clienteId = ((Cliente)Session["cliente"]).ClienteId;
+            var clienteId = ((Usuario)Session["usuario"]).UsuarioId;
             string mensaje = string.Empty;
             bool resultado = false;
             try
@@ -87,6 +88,19 @@ namespace JardinesEdi2022.Web.Controllers
             }
 
             return Json(new { resultado = resultado, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Carrito()
+        {
+            return View();
+        }
+        [HttpPost]
+        public JsonResult MostrarCarrito()
+        {
+            var clienteId = ((Usuario)Session["usuario"]).UsuarioId;
+            var listaVm = _mapper.Map<List<CarritoDetalleVm>>(_carritosServicios.GetItemsCarrito(clienteId));
+            return Json(new { data = listaVm }, JsonRequestBehavior.AllowGet);
+
         }
     }
 }

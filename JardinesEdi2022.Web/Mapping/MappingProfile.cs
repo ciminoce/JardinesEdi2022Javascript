@@ -9,6 +9,7 @@ using JardinesEdi2022.Web.ViewModels.Categoria;
 using JardinesEdi2022.Web.ViewModels.Ciudad;
 using JardinesEdi2022.Web.ViewModels.Producto;
 using JardinesEdi2022.Web.ViewModels.Proveedor;
+using JardinesEdi2022.Web.ViewModels.Carrito;
 
 namespace JardinesEdi2022.Web.Mapping
 {
@@ -21,6 +22,15 @@ namespace JardinesEdi2022.Web.Mapping
             LoadCiudadesMapping();
             LoadProductosMapping();
             LoadProveedoresMapping();
+            LoadCarritosMapping();
+        }
+
+        private void LoadCarritosMapping()
+        {
+            CreateMap<Carrito, CarritoDetalleVm>()
+                .ForMember(dest=>dest.NombreProducto,opt=>opt.MapFrom(src=>src.Producto.NombreProducto))
+                .ForMember(dest => dest.Categoria, opt => opt.MapFrom(src => src.Producto.Categoria.NombreCategoria))
+                .ForMember(dest=>dest.PrecioUnitario,opt=>opt.MapFrom(src=>src.Producto.PrecioUnitario));
         }
 
         private void LoadProveedoresMapping()
