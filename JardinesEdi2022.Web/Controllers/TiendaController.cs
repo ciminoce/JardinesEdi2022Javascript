@@ -9,6 +9,8 @@ using JardinesEdi2022.Servicios.Facades;
 using JardinesEdi2022.Web.App_Start;
 using JardinesEdi2022.Web.ViewModels.Carrito;
 using JardinesEdi2022.Web.ViewModels.Categoria;
+using JardinesEdi2022.Web.ViewModels.Ciudad;
+using JardinesEdi2022.Web.ViewModels.Pais;
 using JardinesEdi2022.Web.ViewModels.Producto;
 
 namespace JardinesEdi2022.Web.Controllers
@@ -18,13 +20,17 @@ namespace JardinesEdi2022.Web.Controllers
         private readonly ICarritosServicios _carritosServicios;
         private readonly ICategoriasServicios _categoriasServicios;
         private readonly IProductosServicios _productosServicios;
+        private readonly IPaisesServicios _paisesServicios;
+        private readonly ICiudadesServicios _ciudadesServicios;
         private readonly IMapper _mapper;
 
-        public TiendaController(ICarritosServicios carritosServicios, ICategoriasServicios categoriasServicios, IProductosServicios productosServicios)
+        public TiendaController(ICarritosServicios carritosServicios, ICategoriasServicios categoriasServicios, IProductosServicios productosServicios, IPaisesServicios paisesServicios, ICiudadesServicios ciudadesServicios)
         {
             _categoriasServicios = categoriasServicios;
             _carritosServicios = carritosServicios;
             _productosServicios = productosServicios;
+            _paisesServicios = paisesServicios;
+            _ciudadesServicios = ciudadesServicios;
             _mapper = AutoMapperConfig.Mapper;
         }
 
@@ -40,6 +46,19 @@ namespace JardinesEdi2022.Web.Controllers
             var listaCategoriasVm = _mapper.Map<List<CategoriaListVm>>(_categoriasServicios.GetLista());
 
             return Json(new { data = listaCategoriasVm }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public JsonResult GetCiudades(int paisId)
+        {
+            var listaCiudades = _mapper.Map<List<CiudadListVm>>(_ciudadesServicios.GetLista(paisId));
+            return Json(new { data = listaCiudades }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetPaises()
+        {
+            var listaPaisesVm = _mapper.Map<List<PaisListVm>>(_paisesServicios.GetLista());
+            return Json(new { data = listaPaisesVm }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

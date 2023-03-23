@@ -81,8 +81,8 @@
                                     <h5 class="card-title">Detalle Envío</h5>
                                     <form>
                                         <div class="mb-2">
-                                            <label for="cboProvincia" class="form-label">Provincia</label>
-                                            <select id="cboProvincia" class="form-select" aria-label="Default select example" onchange="cargarCiudades()">
+                                            <label for="cboPais" class="form-label">Provincia</label>
+                                            <select id="cboPais" class="form-select" aria-label="Default select example" onchange="cargarCiudades()">
                                             </select>
                                         </div>
                                         <div class="mb-2">
@@ -195,29 +195,30 @@
                 }
 
             });
-            cargarCboProvincias();
+            cargarCboPaises();
 
         });
 
 
-        function cargarCboProvincias() {
+        function cargarCboPaises() {
              jQuery.ajax({
-                url: "@Url.Action("ListarProvincias", "Tienda")",
+                url: "@Url.Action("GetPaises", "Tienda")",
                 type: "GET",
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-                success: function (provincias) {
-                    console.log(provincias);
-                    debugger;
-                    $("#cboProvincia").append('<option disabled value="0">'
+                success: function (paises) {
+                    console.log(paises);
+                    /*debugger;*/
+                    $("#cboPais").append('<option selected disabled value="">'
                         +"Seleccione" + '</option>');
-                    $.each(provincias.data,
-                        function (index, provincia) {
-                            $("#cboProvincia").append('<option value="'
-                                + provincia.ProvinciaId + '">'
-                                + provincia.NombreProvincia + '</option>');
-                        });
-                    $("#cboProvincia").val($("#cboProvincia option:first").val());
+                    $.each(paises.data,
+                        function (index, pais) {
+                            $("#cboPais").append('<option value="'
+                                + pais.PaisId + '">'
+                                + pais.NombrePais + '</option>');
+                        }
+                    );
+                    
 
                 }
              });
@@ -228,24 +229,23 @@
 
         function cargarCiudades() {
             $("#cboCiudad").empty();
-            $("#cboCiudad").append('<option value="0" disabled>Seleccionar</option>');
-
+            var paisId = $('#cboPais').val();
             $.ajax({
-                url: '@Url.Action("ListarCiudades","Tienda")',
-                type: 'POST',
+                url: '@Url.Action("GetCiudades","Tienda")'+'?paisId='+paisId,
+                type: 'GET',
                 dataType: 'json',
-                data: {
-                    id: $("#cboProvincia").val()
-
-                },
+                contentType:'application/json, charset=utf-8',
                 success: function (ciudades) {
                     console.log(ciudades);
                     //debugger;
+                    $("#cboCiudad").append('<option selected disabled value="">'
+                        + "Seleccione" + '</option>');
+
                     $.each(ciudades.data,
                         function(i, ciudad) {
                             $("#cboCiudad").append('<option value="' + ciudad.CiudadId + '">' + ciudad.NombreCiudad + '</option>');
                         });
-                    $("#cboCiudad").val($("#cboCiudad option:first").val());
+                    
                 },
                 error: function(ex) {
                     alert('Error al intentar cargar las ciudades.' + ex);
